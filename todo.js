@@ -7,6 +7,7 @@ let ToDo_props = {
 	countOfActiveLists: 0,
 	countOfActiveTasks: 0,
 	lastColor: '',
+	windowMobile: false,
 }
 
 // === // === // === // === // === //
@@ -67,15 +68,18 @@ function addToDATA () {
 function deleteListFromData(list_ID){
 	console.log (list_ID,findListID_DATA(list_ID))
 	const list = document.getElementById (`list_id_${list_ID}`)
-	list.style.animation = 'delete .3s'
-	//
+	let timeout = 10
+	if (!ToDo_props.windowMobile){
+		list.style.animation = 'delete .3s'
+		timeout = 220
+	}
 	setTimeout(function (){
 		ToDo.splice(findListID_DATA(list_ID), 1) //
 		list.remove()
 		setLocal('ToDo',ToDo)
 		//
 		console.log (ToDo)
-	},220)
+	},timeout)
 	//
 }
 // === // === // === // === // === //
@@ -83,14 +87,18 @@ function deleteListFromData(list_ID){
 function deleteTask (list_ID,task_ID) {
 	console.log (list_ID, task_ID)
 	const task = document.getElementById (`task_id_${task_ID}`)
-	task.style.animation = 'delete .3s'
+	let timeout = 10
+	if(!ToDo_props.windowMobile){
+		task.style.animation = 'delete .3s'
+		timeout = 220
+	}
 	ToDo[findListID_DATA(list_ID)].tasks_ARR.splice(findTaskID_DATA(list_ID,task_ID), 1)
 	setTimeout(function (){
 		task.remove()
 		setLocal('ToDo',ToDo)
 		//
 		console.log (ToDo)
-	},220)
+	},timeout)
 }
 
 // === // === // === // === // === //
@@ -164,19 +172,13 @@ function editListName(list_ID,data){
 	const listName = document.getElementById (`list_name_id_${list_ID}`)
 	listName.value = ToDo[findListID_DATA(list_ID)].list_NAME
 	setLocal('ToDo',ToDo)
-	// console.log (ToDo[findListID_DATA(list_ID)].list_NAME)
 }
 
 // === // === // === // === // === //
 // edit task
 function editTask(list_ID,task_ID,data){
-	// console.log (list_ID,task_ID,data)
 	ToDo[findListID_DATA (list_ID)].tasks_ARR[findTaskID_DATA (list_ID, task_ID)].task_CONTAINER = data.value
-	// ToDo[findListID_DATA(list_ID)].tasks_ARR[task_ID.toString().slice(-1)].task_CONTAINER = data.value
-	// const listName = document.getElementById (`list_name_id_${list_ID}`)
-	// listName.value = ToDo[findListID_DATA(list_ID)].list_NAME
 	setLocal('ToDo',ToDo)
-	// // console.log (ToDo[findListID_DATA(list_ID)].list_NAME)
 }
 
 // === // === // === // === // === //
@@ -262,4 +264,20 @@ function dateDeadlinesCheck(){
 
 window.addEventListener('load',function (){
 	dateDeadlinesCheck()
+	if (window.innerWidth <= 765){
+		ToDo_props.windowMobile = true
+		console.log ('ToDo_props.windowMobile = true')
+	} else {
+		ToDo_props.windowMobile = false
+	}
 })
+//onunload
+window.addEventListener('onunload',function (){
+	setLocal('ToDo',ToDo)
+	setLocal('ToDo_props',ToDo_props)
+	//
+})
+
+// window.addEventListener("resize", function (){
+//
+// });
